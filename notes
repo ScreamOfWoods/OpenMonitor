@@ -1,0 +1,13 @@
+Server monitoring software
+
+The monitoring software should implement the following technologies:
+1. Database where each server logs it's resources (CPU usage, RAM usage, Number of hosts etc.)
+2. Small C++ program or Python script that tracks the servers resources and writes them in the database
+3. Middle layer REST api which is used to get the display data from the database
+4. Frontend which is used to display the various datasets to the user
+4.1. The Frontend should be a single page application
+4.2. There should be functionality to switch between monitoring different servers and all servers
+4.2.1. Each server should report it's number of cpus, cpu cores, threads and clock, as well as the load averege
+4.2.2. Each server should report it's memory usage
+4.2.3. Each server should report number of running processes
+4.2.4. Each server should report it's top 5 most cpu hungry and top 5 most memory hungry processes (cmdline)
