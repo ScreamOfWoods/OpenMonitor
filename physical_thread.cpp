@@ -7,8 +7,8 @@
 using namespace std;
 
 PhysicalThread::PhysicalThread(string vendor_id, string model_name, int number_of_cores,
-	   	double clock_speed_mhz, int thread_id, int core_id, double thread_clock) : 
-	Processor(vendor_id, model_name, number_of_cores, clock_speed_mhz)
+	   	int thread_id, int core_id, double thread_clock) :
+	Processor(vendor_id, model_name, number_of_cores)
 {
 	this->thread_clock = thread_clock;
 	this->thread_id = thread_id;

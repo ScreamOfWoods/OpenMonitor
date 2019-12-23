@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "processor.h"
 #include "physical_thread.h"
@@ -18,13 +19,14 @@ class ProcParser
 		//Variables
 		std::vector<PhysicalThread> cpu_threads;
 	public:
+
 		//Constructors
 		ProcParser();
 
 		//Functions
 		std::vector<PhysicalThread> getCpuThreads();
 		void addThread(std::string vendor_id, std::string model_name, int number_of_cores,
-				double clock_speed_mhz, int thread_id, int core_id, double thread_clock);
+				int thread_id, int core_id, double thread_clock);
 		void removeThread();
 		void parseCpuInfo();
 		void parseStat();

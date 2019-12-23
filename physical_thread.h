@@ -4,7 +4,7 @@
 #include "processor.h"
 
 //Physical thread abstraction extends Processor class
-class PhysicalThread : Processor
+class PhysicalThread : public Processor
 {
 	private:
 		//Variables
@@ -14,7 +14,7 @@ class PhysicalThread : Processor
 	public:
 		//Constructors
 		PhysicalThread(std::string vendor_id, std::string model_name, int number_of_cores,
-				double clock_speed_mhz, int thread_id, int core_id, double thread_clock);
+				int thread_id, int core_id, double thread_clock);
 		PhysicalThread();
 
 		//Functions
