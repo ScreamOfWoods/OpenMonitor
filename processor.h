@@ -2,6 +2,8 @@
 #define PROCESSOR_H
 
 #include <iostream>
+#include <cstdint>
+#include <vector>
 
 //Processor abstraction
 class Processor
@@ -10,19 +12,19 @@ class Processor
 		//Variables
 		std::string vendor_id;
 		std::string model_name;
-		int number_of_cores;
+		std::int32_t number_of_cores;
 	public:
 		//Constructors
-		Processor(std::string vendor_id, std::string model_name, int number_of_cores);
+		Processor(std::string vendor_id, std::string model_name, std::int32_t number_of_cores);
 		Processor();
 
 		//Functions
 		void setVendorID(std::string vendor_id);
 		void setModelName(std::string model_name);
-		void setNumberOfCores(int number_of_cores);
+		void setNumberOfCores(std::int32_t number_of_cores);
 		std::string getVendorID();
 		std::string getModelName();
-		int getNumberOfCores();
+		std::int32_t getNumberOfCores();
 };
 
 #endif //PROCESSOR_H

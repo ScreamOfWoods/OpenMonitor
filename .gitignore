@@ -31,5 +31,6 @@
 *.out
 *.app
 
-#Vim swp files
+#Vim necessary files
 *.swp
+*.files

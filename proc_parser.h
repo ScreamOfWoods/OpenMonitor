@@ -5,31 +5,37 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map>
+#include <cstdint>
 
-#include "processor.h"
-#include "physical_thread.h"
+#include "host.h"
 
 #define CPUINFO_PATH "/proc/cpuinfo"
+#define MEMINFO_PATH "/proc/meminfo"
+#define LOADAVG_PATH "/proc/loadavg"
 
 //Proc fs parser class.
 class ProcParser
 {
 	private:
 		//Variables
-		std::vector<PhysicalThread> cpu_threads;
+        Host host_machine;
+		std::vector<std::string> cpu_tokens;
+		std::vector<std::string> mem_tokens;
 	public:
 
 		//Constructors
 		ProcParser();
 
 		//Functions
-		std::vector<PhysicalThread> getCpuThreads();
-		void addThread(std::string vendor_id, std::string model_name, int number_of_cores,
-				int thread_id, int core_id, double thread_clock);
-		void removeThread();
+		void addThread(std::string vendor_id, std::string model_name, int32_t number_of_cores,
+				int32_t thread_id, int core_id, double thread_clock);
+		void initSearchTokens();
 		void parseCpuInfo();
-		void parseStat();
+		void parseMemInfo();
 		void parseLoadavg();
+		void parseStat();
+		std::string trim(const std::string& str);
+		int32_t getValueFromProperty(std::vector<std::string> tokens, std::string property);
+        Host& getHostMachine();
 };
 #endif //PROC_PARSER_H
