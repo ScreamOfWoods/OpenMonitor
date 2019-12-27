@@ -44,9 +44,14 @@ uint32_t Host::getNumberOfProcesses()
     return number_of_processes;
 }
 
-uint64_t Host::getUptime()
+double Host::getUptime()
 {
     return uptime;
+}
+
+double Host::getUptimeIdle()
+{
+    return uptime_idle;
 }
 
 string Host::getKernelVersion()
@@ -99,9 +104,14 @@ void Host::setNumberOfProcesses(uint32_t number_of_processes)
     this->number_of_processes = number_of_processes;
 }
 
-void Host::setUptime(uint64_t uptime)
+void Host::setUptime(double uptime)
 {
     this->uptime = uptime;
+}
+
+void Host::setUptimeIdle(double uptime_idle)
+{
+    this->uptime_idle = uptime_idle;
 }
 
 void Host::setKernelVersion(string kernel_version)

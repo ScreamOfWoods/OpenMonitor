@@ -17,7 +17,8 @@ class Host
 		std::int8_t loadavg_5;
 		std::int8_t loadavg_15;
         std::uint32_t number_of_processes;
-        std::uint64_t uptime;
+        double uptime;
+        double uptime_idle;
 		std::string kernel_version;
 		std::string hostname;
 		std::vector<std::string> ip_addresses;
@@ -34,7 +35,8 @@ class Host
 		std::int8_t getLoadavg5();
 		std::int8_t getLoadavg15();
         std::uint32_t getNumberOfProcesses();
-        std::uint64_t getUptime();
+        double getUptime();
+        double getUptimeIdle();
         std::string getKernelVersion();
         std::string getHostname();
         std::vector<std::string> getIpAddresses();
@@ -46,7 +48,8 @@ class Host
 		void setLoadavg5(std::int8_t loadavg_5);
 		void setLoadavg15(std::int8_t loadavg_15);
         void setNumberOfProcesses(uint32_t number_of_processes);
-        void setUptime(uint64_t uptime);
+        void setUptime(double uptime);
+        void setUptimeIdle(double uptime_idle);
         void setKernelVersion(std::string kernel_version);
         void setHostname(std::string hostname);
         void setIpAddresses(std::vector<std::string> ip_addresses);

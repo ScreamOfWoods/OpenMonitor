@@ -146,7 +146,7 @@ void ProcParser::parseMemInfo()
 
 void ProcParser::parseLoadavg()
 {
-	FILE *file_instance;
+	FILE* file_instance;
 	if((file_instance = fopen(LOADAVG_PATH, "r")) == NULL) {
 		cerr<<"Failed to open "<<LOADAVG_PATH<<endl;
 		exit(EXIT_FAILURE);
@@ -157,6 +157,7 @@ void ProcParser::parseLoadavg()
 	if((fscanf(file_instance, "%f %f %f %d/%d %d", &load1, &load5, &load15, 
 		&runnable_kern_procs, &existing_kern_procs, &last_pid)) != 6) {
 		cerr<<"Failed to properly read "<<LOADAVG_PATH<<endl;
+        fclose(file_instance);
 		exit(EXIT_FAILURE);
 	}
 
@@ -165,6 +166,67 @@ void ProcParser::parseLoadavg()
 	host_machine.setLoadavg15(int8_t (load15 * 100));
 
 	printf("Loadavg: %.2f %.2f %.2f %d/%d %d\n", load1, load5, load15, runnable_kern_procs, existing_kern_procs, last_pid);
+
+    fclose(file_instance);
+}
+
+void ProcParser::parseUptime()
+{
+    FILE* file_instance;
+    if((file_instance = fopen(UPTIME_PATH, "r")) == NULL) {
+		cerr<<"Failed to open "<<UPTIME_PATH<<endl;
+		exit(EXIT_FAILURE);
+    }
+
+    double uptime, uptime_idle;
+    if((fscanf(file_instance, "%lf %lf", &uptime, &uptime_idle) != 2)) {
+		cerr<<"Failed to properly read "<<UPTIME_PATH<<endl;
+        fclose(file_instance);
+		exit(EXIT_FAILURE);
+    }
+
+    host_machine.setUptime(uptime);
+    host_machine.setUptimeIdle(uptime_idle);
+
+    fclose(file_instance);
+}
+
+void ProcParser::parseHostnameKernelVerion()
+{
+	ifstream host_info;
+	string line = "";
+
+	host_info.open(HOSTNAME_PATH, std::ios::in);
+	if(!host_info.is_open()) {
+		cerr<<"Failed to open "<<HOSTNAME_PATH<<endl;
+		exit(EXIT_FAILURE);
+	}
+    
+    getline(host_info, line);
+    if(line.empty()) {
+        cerr<<"Failed to properly read: "<<HOSTNAME_PATH<<endl;
+        host_info.close();
+        exit(EXIT_FAILURE);
+    }
+
+    host_machine.setHostname(line);
+    host_info.close();
+
+	host_info.open(KERNEL_VER_PATH, std::ios::in);
+	if(!host_info.is_open()) {
+		cerr<<"Failed to open "<<KERNEL_VER_PATH<<endl;
+		exit(EXIT_FAILURE);
+	}
+    
+    getline(host_info, line);
+    if(line.empty()) {
+        cerr<<"Failed to properly read: "<<KERNEL_VER_PATH<<endl;
+        host_info.close();
+        exit(EXIT_FAILURE);
+    }
+
+    host_machine.setKernelVersion(line);
+    host_info.close();
 }
 
 string ProcParser::trim(const std::string& str)
@@ -220,6 +282,8 @@ int32_t main()
 	proc_parser.parseCpuInfo();
 	proc_parser.parseMemInfo();
 	proc_parser.parseLoadavg();
+	proc_parser.parseUptime();
+	proc_parser.parseHostnameKernelVerion();
 
 	for(uint32_t i = 0; i < proc_parser.getHostMachine().getThreads().size(); i++) {
 		cout<<proc_parser.getHostMachine().getThreads().at(i).getThreadID()<<" "<<proc_parser.getHostMachine().getThreads().at(i).getThreadClock()<<endl;
@@ -228,5 +292,8 @@ int32_t main()
 	printf("Total Memory: %lu Available Memory %lu\n", proc_parser.getHostMachine().getRAM().getMemTotal(), proc_parser.getHostMachine().getRAM().getMemAvailable());
 
     printf("Loadavg 1: %d\n",proc_parser.getHostMachine().getLoadavg1());
+    printf("Uptime %.2lf; UPtime Idle: %.2lf\n", proc_parser.getHostMachine().getUptime(), proc_parser.getHostMachine().getUptimeIdle());
+    printf("Kernel version %s; Hostname %s\n", proc_parser.getHostMachine().getKernelVersion().c_str(), proc_parser.getHostMachine().getHostname().c_str());
+
 	return 0;
 }

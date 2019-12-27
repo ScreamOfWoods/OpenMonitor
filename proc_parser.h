@@ -9,9 +9,12 @@
 
 #include "host.h"
 
-#define CPUINFO_PATH "/proc/cpuinfo"
-#define MEMINFO_PATH "/proc/meminfo"
-#define LOADAVG_PATH "/proc/loadavg"
+#define UPTIME_PATH         "/proc/uptime"
+#define CPUINFO_PATH        "/proc/cpuinfo"
+#define MEMINFO_PATH        "/proc/meminfo"
+#define LOADAVG_PATH        "/proc/loadavg"
+#define HOSTNAME_PATH       "/proc/sys/kernel/hostname"
+#define KERNEL_VER_PATH     "/proc/sys/kernel/version"
 
 //Proc fs parser class.
 class ProcParser
@@ -21,6 +24,10 @@ class ProcParser
         Host host_machine;
 		std::vector<std::string> cpu_tokens;
 		std::vector<std::string> mem_tokens;
+
+        //Functions
+		std::string trim(const std::string& str);
+		int32_t getValueFromProperty(std::vector<std::string> tokens, std::string property);
 	public:
 
 		//Constructors
@@ -33,9 +40,9 @@ class ProcParser
 		void parseCpuInfo();
 		void parseMemInfo();
 		void parseLoadavg();
+        void parseUptime();
+        void parseHostnameKernelVerion();
 		void parseStat();
-		std::string trim(const std::string& str);
-		int32_t getValueFromProperty(std::vector<std::string> tokens, std::string property);
         Host& getHostMachine();
 };
 #endif //PROC_PARSER_H
