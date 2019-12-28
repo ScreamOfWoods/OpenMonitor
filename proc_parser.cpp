@@ -229,6 +229,44 @@ void ProcParser::parseHostnameKernelVerion()
     host_info.close();
 }
 
+void ProcParser::parseFibTrie()
+{
+	ifstream fib_trie;
+	string line = "";
+
+	fib_trie.open(FIB_TRIE_PATH, std::ios::in);
+	if(!fib_trie.is_open()) {
+		cerr<<"Failed to open "<<FIB_TRIE_PATH<<endl;
+		exit(EXIT_FAILURE);
+	}
+
+    string delimiter = "|-- ";
+    vector<string> ips;
+    while(getline(fib_trie, line)) {
+        line = trim(line);
+        auto found = line.find(delimiter);
+        if(found == string::npos)
+            continue;
+        //Remove delimiter from the string when extracting the ip address
+        found += 4;
+
+        line = line.substr(found, line.back());
+
+        if(startsWith(line, "127"))
+            continue;
+        if(startsWith(line, "169.254"))
+            continue;
+        if(endsWith(line, ".0"))
+            continue;
+        if(endsWith(line, ".255"))
+            continue;
+
+        ips.push_back(line);
+    }
+    removeDuplicates(&ips);
+    host_machine.setIpAddresses(ips);
+}
+
 string ProcParser::trim(const std::string& str)
 {
     const auto strBegin = str.find_first_not_of(" \t");
@@ -239,6 +277,29 @@ string ProcParser::trim(const std::string& str)
     const auto strRange = strEnd - strBegin + 1;
 
     return str.substr(strBegin, strRange);
+}
+
+void ProcParser::removeDuplicates(vector<string>* vec)
+{
+    sort( vec->begin(), vec->end() );
+    vec->erase( unique( vec->begin(), vec->end() ), vec->end() );
+}
+
+bool ProcParser::startsWith(string str, string token)
+{
+    auto found = str.find(token);
+    if(found == string::npos)
+        return false;
+    return true;
+}
+
+bool ProcParser::endsWith(string full, string ending)
+{
+    if(full.length() >= ending.length()) {
+        return (0 == full.compare(full.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
 }
 
 void ProcParser::initSearchTokens()
@@ -284,10 +345,15 @@ int32_t main()
 	proc_parser.parseLoadavg();
 	proc_parser.parseUptime();
 	proc_parser.parseHostnameKernelVerion();
+	proc_parser.parseFibTrie();
 
 	for(uint32_t i = 0; i < proc_parser.getHostMachine().getThreads().size(); i++) {
 		cout<<proc_parser.getHostMachine().getThreads().at(i).getThreadID()<<" "<<proc_parser.getHostMachine().getThreads().at(i).getThreadClock()<<endl;
 	}
+
+    for(uint32_t i = 0; i < proc_parser.getHostMachine().getIpAddresses().size(); i++){
+        cout<<"Ip: "<<proc_parser.getHostMachine().getIpAddresses().at(i)<<endl;
+    }
 
 	printf("Total Memory: %lu Available Memory %lu\n", proc_parser.getHostMachine().getRAM().getMemTotal(), proc_parser.getHostMachine().getRAM().getMemAvailable());
 

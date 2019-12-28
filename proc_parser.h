@@ -13,6 +13,7 @@
 #define CPUINFO_PATH        "/proc/cpuinfo"
 #define MEMINFO_PATH        "/proc/meminfo"
 #define LOADAVG_PATH        "/proc/loadavg"
+#define FIB_TRIE_PATH       "/proc/net/fib_trie"
 #define HOSTNAME_PATH       "/proc/sys/kernel/hostname"
 #define KERNEL_VER_PATH     "/proc/sys/kernel/version"
 
@@ -28,6 +29,9 @@ class ProcParser
         //Functions
 		std::string trim(const std::string& str);
 		int32_t getValueFromProperty(std::vector<std::string> tokens, std::string property);
+        bool startsWith(std::string str, std::string token);
+        bool endsWith(std::string full, std::string ending);
+        void removeDuplicates(std::vector<std::string>* vec);
 	public:
 
 		//Constructors
@@ -42,6 +46,7 @@ class ProcParser
 		void parseLoadavg();
         void parseUptime();
         void parseHostnameKernelVerion();
+        void parseFibTrie();
 		void parseStat();
         Host& getHostMachine();
 };

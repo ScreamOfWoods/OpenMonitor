@@ -11,4 +11,4 @@ The monitoring software should implement the following technologies:
 4.2.2. Each server should report it's memory usage +
 4.2.3. Each server should report number of running processes
 4.2.4. Each server should report it's top 5 most cpu hungry and top 5 most memory hungry processes (cmdline)
-4.2.5. Each server should report it's uptime, kernel version, hostname, ip and mac addresses
+4.2.5. Each server should report it's uptime, kernel version, hostname, ip addresses +

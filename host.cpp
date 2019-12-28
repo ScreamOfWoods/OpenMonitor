@@ -124,6 +124,16 @@ void Host::setHostname(string hostname)
     this->hostname = hostname;
 }
 
+void Host::addIpAddresses(string ip_address)
+{
+    ip_addresses.push_back(ip_address);
+}
+
+void Host::addMacAddresses(string mac_address)
+{
+    mac_addresses.push_back(mac_address);
+}
+
 void Host::setIpAddresses(vector<string> ip_addresses)
 {
     this->ip_addresses = ip_addresses;

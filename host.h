@@ -52,6 +52,8 @@ class Host
         void setUptimeIdle(double uptime_idle);
         void setKernelVersion(std::string kernel_version);
         void setHostname(std::string hostname);
+        void addIpAddresses(std::string ip_address);
+        void addMacAddresses(std::string mac_address);
         void setIpAddresses(std::vector<std::string> ip_addresses);
         void setMacAddresses(std::vector<std::string> mac_addresses);
         void setRAM(RAM ram);
