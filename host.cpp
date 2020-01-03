@@ -4,6 +4,7 @@
 
 #include "host.h"
 #include "ram.h"
+#include "process.h"
 
 using namespace std;
 
@@ -77,6 +78,11 @@ vector<string> Host::getMacAddresses()
 vector<PhysicalThread> Host::getThreads()
 {
     return threads;
+}
+
+vector<Process> Host::getProcesses()
+{
+    return processes;
 }
 
 RAM& Host::getRAM()

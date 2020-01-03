@@ -7,6 +7,7 @@
 
 #include "physical_thread.h"
 #include "ram.h"
+#include "process.h"
 
 //Host machine abstraction
 class Host
@@ -25,6 +26,7 @@ class Host
 		std::vector<std::string> mac_addresses;
 
         std::vector<PhysicalThread> threads;
+        std::vector<Process> processes;
         RAM random_access_memory;
 	public:
         //Constructors
@@ -42,6 +44,7 @@ class Host
         std::vector<std::string> getIpAddresses();
         std::vector<std::string> getMacAddresses();
         std::vector<PhysicalThread> getThreads();
+        std::vector<Process> getProcesses();
         RAM& getRAM();
         void addThread(PhysicalThread thread);
 		void setLoadavg1(std::int8_t loadavg_1);
