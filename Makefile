@@ -1,10 +1,10 @@
 CXX = g++
-CXX_FLAGS = -Wall -Wextra -g -std=c++11
+CXX_FLAGS = -Wall -Wextra -g -std=c++11 -fsanitize=address
 
 objects = host.o processor.o physical_thread.o proc_parser.o ram.o
 
 server_reporter: $(objects)
-	$(CXX) $(CXX_FLA) -o server_reporer.exe $(objects)
+	$(CXX) $(CXX_FLAGS) -o server_reporer.exe $(objects)
 
 host.o: host.h
 processor.o: processor.h
