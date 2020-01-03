@@ -47,6 +47,7 @@ class ProcParser
         void parseUptime();
         void parseHostnameKernelVerion();
         void parseFibTrie();
+		void parseProcessStat();
 		void parseStat();
         Host& getHostMachine();
 };

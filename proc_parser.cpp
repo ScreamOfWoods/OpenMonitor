@@ -8,6 +8,9 @@
 #include <functional>
 #include <algorithm>
 #include <cstdint>
+#include <cinttypes>
+#include <dirent.h>
+#include <cerrno>
 
 #include "processor.h"
 #include "physical_thread.h"
@@ -267,6 +270,103 @@ void ProcParser::parseFibTrie()
     host_machine.setIpAddresses(ips);
 }
 
+void ProcParser::parseProcessStat()
+{
+    DIR *dir;
+    struct dirent *dir_entity;
+
+    if((dir = opendir("/proc")) == NULL) {
+        fprintf(stderr, "Failed to open /proc %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    
+    while((dir_entity = readdir(dir)) != NULL) {
+        int64_t proc_entry;
+        try{
+            proc_entry = stoi(dir_entity->d_name);
+            char dir_name[256];
+            if(snprintf(dir_name, 256, "/proc/%ld/stat", proc_entry) < 0) {
+                fprintf(stderr, "Sprintf failed to create /proc/<num>/stat entity: %s\n", strerror(errno));
+                exit(EXIT_FAILURE);
+            }
+
+            FILE *proc_entry_file = fopen(dir_name, "r");
+            if(proc_entry_file == NULL) {
+                fprintf(stderr, "Failed to open %s. Reason %s\n", dir_name, strerror(errno));
+                exit(EXIT_FAILURE);
+            }
+
+            char command_cstr[_POSIX_PATH_MAX];
+            char state;
+            long int num_threads, cutime, cstime, itrealvalue, cguest_time;
+            string command, start_time;
+            unsigned long sig, blocked, guest_time, start_data, end_data, start_brk, arg_start, arg_end;
+            unsigned int flags, rt_prio, policy;
+            unsigned int env_start, env_end;
+            int pid, exit_code, ppid, pgrp, session, tty_nr, tpgid, processor, exit_signal;
+            unsigned long priority, nice, umode_time, smode_time, virtual_memory_bytes, physical_memory_bytes;
+            unsigned long minflt, cminflt, majflt, cmajflt, rsslim;
+            unsigned long long start_time_ticks, delayacct;
+            unsigned long startcode, endcode, startstack, kstkesp, kstkeip;
+            unsigned long sigignore, sigcatch, wchan, nswap, cnswap;
+//            int pid;
+
+            if(fscanf(proc_entry_file, "%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
+                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
+                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
+                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d",
+                &pid, command_cstr, &state, &ppid, &pgrp, &session, &tty_nr, &tpgid, &flags, &minflt, 
+                &cminflt, &majflt, &cmajflt, &umode_time, &smode_time, &cutime, &cstime, &priority,
+                &nice, &num_threads, &itrealvalue, &start_time_ticks, &virtual_memory_bytes,
+                &physical_memory_bytes, &rsslim, &startcode, &endcode, &startstack, &kstkesp,
+                &kstkeip, &sig, &blocked, &sigignore, &sigcatch, &wchan, &nswap, &cnswap, 
+                &exit_signal, &processor, &rt_prio, &policy, &delayacct, &guest_time,
+                &cguest_time, &start_data, &end_data, &start_brk, &arg_start, &arg_end,
+                &env_start, &env_end, &exit_code) != 52) {
+
+                fclose(proc_entry_file);
+                
+                fprintf(stderr, "Failed to read %s! Reason %s\n", dir_name, strerror(errno));
+                //exit(EXIT_FAILURE);
+            } 
+            //printf("PID: %" PRId32 "\n", pid);
+
+
+            fprintf(stdout, ">>>>%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
+                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
+                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
+                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d<<<<\n",
+                pid, command_cstr, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, 
+                cminflt, majflt, cmajflt, umode_time, smode_time, cutime, cstime, priority,
+                nice, num_threads, itrealvalue, start_time_ticks, virtual_memory_bytes,
+                physical_memory_bytes, rsslim, startcode, endcode, startstack, kstkesp,
+                kstkeip, sig, blocked, sigignore, sigcatch, wchan, nswap, cnswap, 
+                exit_signal, processor, rt_prio, policy, delayacct, guest_time,
+                cguest_time, start_data, end_data, start_brk, arg_start, arg_end,
+                env_start, env_end, exit_code); 
+
+#if 0
+            fprintf(stdout, "\n>>>>%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
+                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
+                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
+                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %d<<<<\n",
+                pid, command_cstr, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, 
+                cminflt, majflt, cmajflt, umode_time, smode_time, cutime, cstime, priority,
+                nice, num_threads, itrealvalue, start_time_ticks, virtual_memory_bytes,
+                physical_memory_bytes, rsslim, startcode, endcode, startstack, kstkesp,
+                kstkeip, sig, blocked, sigignore, sigcatch, wchan, nswap, cnswap, 
+                exit_signal, processor, rt_prio, policy, delayacct, guest_time,
+                cguest_time, start_data, end_data, start_brk, arg_start, arg_end,
+                env_start, env_end, exit_code); 
+            //break;
+#endif
+                fclose(proc_entry_file);
+        } catch(invalid_argument exception) { }
+    }
+
+    closedir(dir);
+}
+
 string ProcParser::trim(const std::string& str)
 {
     const auto strBegin = str.find_first_not_of(" \t");
@@ -346,6 +446,7 @@ int32_t main()
 	proc_parser.parseUptime();
 	proc_parser.parseHostnameKernelVerion();
 	proc_parser.parseFibTrie();
+	proc_parser.parseProcessStat();
 
 	for(uint32_t i = 0; i < proc_parser.getHostMachine().getThreads().size(); i++) {
 		cout<<proc_parser.getHostMachine().getThreads().at(i).getThreadID()<<" "<<proc_parser.getHostMachine().getThreads().at(i).getThreadClock()<<endl;
