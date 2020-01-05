@@ -9,7 +9,7 @@ Process::Process() {}
 
 Process::Process(int32_t pid, string command, char state, uint64_t umode_time, 
         uint64_t smode_time, int32_t priority, int32_t nice, int64_t num_threads,
-        string start_time, uint64_t virtual_memory_bytes,
+        string start_time, uint64_t start_time_ticks, uint64_t virtual_memory_bytes,
         uint64_t physical_memory_bytes, int32_t exit_code)
 {
     this->pid = pid;
@@ -21,6 +21,7 @@ Process::Process(int32_t pid, string command, char state, uint64_t umode_time,
     this->nice = nice;
     this->num_threads = num_threads;
     this->start_time = start_time;
+    this->start_time_ticks = start_time_ticks;
     this->virtual_memory_bytes = virtual_memory_bytes;
     this->physical_memory_bytes = physical_memory_bytes;
     this->exit_code = exit_code;
@@ -70,6 +71,11 @@ int64_t Process::getNumThreads()
 string Process::getStartTime()
 {
     return start_time;
+}
+
+uint64_t Process::getStartTimeTicks()
+{
+    return start_time_ticks;
 }
 
 uint64_t Process::getVirtualMemory()
@@ -131,6 +137,11 @@ void Process::setNumThreads(uint32_t num_threads)
 void Process::setStartTime(string start_time)
 {
     this->start_time = start_time;
+}
+
+void Process::setStartTimeTicks(uint64_t start_time_ticks)
+{
+    this->start_time_ticks = start_time_ticks;
 }
 
 void Process::setVirtualMemory(uint64_t virtual_memory_bytes)
