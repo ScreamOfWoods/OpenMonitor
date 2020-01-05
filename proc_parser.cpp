@@ -11,6 +11,8 @@
 #include <cinttypes>
 #include <dirent.h>
 #include <cerrno>
+#include <ctime>
+#include <unistd.h>
 
 #include "processor.h"
 #include "physical_thread.h"
@@ -367,6 +369,61 @@ void ProcParser::parseProcessStat()
     closedir(dir);
 }
 
+//TODO create proc stat abstraction? and fill it
+void ProcParser::parseStat()
+{
+    FILE* proc_stat;
+    if((proc_stat = fopen(STAT_PATH, "r")) == NULL) {
+		cerr<<"Failed to open "<<STAT_PATH<<endl;
+		exit(EXIT_FAILURE);
+    }
+
+    unsigned long long user, nice, system, idle;
+    unsigned long long boot_time, processes, procs_running;
+
+    if( (fscanf(proc_stat, "%*s %llu %llu %llu %llu %*llu "
+        "%*llu %*llu %*llu %*llu %*llu", &user, &nice, &system, &idle)) != 4) {
+        fprintf(stderr, "Failed to read %s\n", STAT_PATH);
+        fclose(proc_stat);
+        exit(EXIT_FAILURE);        
+    }
+    
+    char *line = NULL;
+    size_t len = 0;
+    while((getline(&line, &len, proc_stat)) != -1) {
+        string pass_line = string(line);
+        if(startsWith(pass_line, "btime")) {
+            if((sscanf(line, "%*s %llu", &boot_time)) != 1) {
+                fprintf(stderr, "Failed to read %s\n", STAT_PATH);
+                fclose(proc_stat);
+                exit(EXIT_FAILURE);        
+            }
+        }
+
+        if(startsWith(pass_line, "processes")) {
+            if((sscanf(line, "%*s %llu", &processes)) != 1) {
+                fprintf(stderr, "Failed to read %s\n", STAT_PATH);
+                fclose(proc_stat);
+                exit(EXIT_FAILURE);        
+            }
+        }
+
+        if(startsWith(pass_line, "procs_running")) {
+            if((sscanf(line, "%*s %llu", &procs_running)) != 1) {
+                fprintf(stderr, "Failed to read %s\n", STAT_PATH);
+                fclose(proc_stat);
+                exit(EXIT_FAILURE);        
+            }
+        }
+    }
+    if(line)
+        free(line);
+
+    printf("cpu %llu %llu %llu %llu\n", user, nice, system, idle);
+    printf("btime %llu processes %llu running %llu\n", boot_time, processes, procs_running);
+    fclose(proc_stat);
+}
+
 string ProcParser::trim(const std::string& str)
 {
     const auto strBegin = str.find_first_not_of(" \t");
@@ -446,6 +503,7 @@ int32_t main()
 	proc_parser.parseUptime();
 	proc_parser.parseHostnameKernelVerion();
 	proc_parser.parseFibTrie();
+    proc_parser.parseStat();
 	proc_parser.parseProcessStat();
 
 	for(uint32_t i = 0; i < proc_parser.getHostMachine().getThreads().size(); i++) {

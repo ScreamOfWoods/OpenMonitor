@@ -9,6 +9,7 @@
 
 #include "host.h"
 
+#define STAT_PATH           "/proc/stat"
 #define UPTIME_PATH         "/proc/uptime"
 #define CPUINFO_PATH        "/proc/cpuinfo"
 #define MEMINFO_PATH        "/proc/meminfo"
