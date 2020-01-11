@@ -33,6 +33,8 @@ class ProcParser
         bool startsWith(std::string str, std::string token);
         bool endsWith(std::string full, std::string ending);
         void removeDuplicates(std::vector<std::string>* vec);
+        bool isProcessRunning(int32_t pid, uint64_t ticks);
+        int64_t getProcessByPid(int64_t pid);
 	public:
 
 		//Constructors

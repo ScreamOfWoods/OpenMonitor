@@ -13,12 +13,15 @@
 #include <cerrno>
 #include <ctime>
 #include <unistd.h>
+#include <thread>
+#include <chrono>
 
 #include "processor.h"
 #include "physical_thread.h"
 #include "proc_parser.h"
 #include "ram.h"
 #include "host.h"
+#include "host_to_json.h"
 
 using namespace std;
 
@@ -282,88 +285,124 @@ void ProcParser::parseProcessStat()
         exit(EXIT_FAILURE);
     }
     
-    while((dir_entity = readdir(dir)) != NULL) {
-        int64_t proc_entry;
-        try{
-            proc_entry = stoi(dir_entity->d_name);
-            char dir_name[256];
-            if(snprintf(dir_name, 256, "/proc/%ld/stat", proc_entry) < 0) {
-                fprintf(stderr, "Sprintf failed to create /proc/<num>/stat entity: %s\n", strerror(errno));
-                exit(EXIT_FAILURE);
-            }
+    //read /proc/pid/stat sleep for a sec and read it again
+    for(int i = 0; i < 2; i++) {
+        while((dir_entity = readdir(dir)) != NULL) {
+            int64_t proc_entry;
+            try{
+                proc_entry = stoi(dir_entity->d_name);
+                char dir_name[256];
+                if(snprintf(dir_name, 256, "/proc/%ld/stat", proc_entry) < 0) {
+                    fprintf(stderr, "Sprintf failed to create /proc/<num>/stat entity: %s\n", strerror(errno));
+                    exit(EXIT_FAILURE);
+                }
 
-            FILE *proc_entry_file = fopen(dir_name, "r");
-            if(proc_entry_file == NULL) {
-                fprintf(stderr, "Failed to open %s. Reason %s\n", dir_name, strerror(errno));
-                exit(EXIT_FAILURE);
-            }
+                FILE *proc_entry_file = fopen(dir_name, "r");
+                if(proc_entry_file == NULL) {
+                    fprintf(stderr, "Failed to open %s. Reason %s\n", dir_name, strerror(errno));
+                    exit(EXIT_FAILURE);
+                }
 
-            char command_cstr[_POSIX_PATH_MAX];
-            char state;
-            long int num_threads, cutime, cstime, itrealvalue, cguest_time;
-            string command, start_time;
-            unsigned long sig, blocked, guest_time, start_data, end_data, start_brk, arg_start, arg_end;
-            unsigned int flags, rt_prio, policy;
-            unsigned int env_start, env_end;
-            int pid, exit_code, ppid, pgrp, session, tty_nr, tpgid, processor, exit_signal;
-            unsigned long priority, nice, umode_time, smode_time, virtual_memory_bytes, physical_memory_bytes;
-            unsigned long minflt, cminflt, majflt, cmajflt, rsslim;
-            unsigned long long start_time_ticks, delayacct;
-            unsigned long startcode, endcode, startstack, kstkesp, kstkeip;
-            unsigned long sigignore, sigcatch, wchan, nswap, cnswap;
-//            int pid;
+                char command_cstr[_POSIX_PATH_MAX];
+                char state;
+                long int num_threads, cutime, cstime, itrealvalue, cguest_time;
+                string command, start_time;
+                unsigned long sig, blocked, guest_time, start_data, end_data, start_brk, arg_start, arg_end;
+                unsigned int flags, rt_prio, policy;
+                unsigned int env_start, env_end;
+                int pid, exit_code, ppid, pgrp, session, tty_nr, tpgid, processor, exit_signal;
+                unsigned long priority, nice, umode_time, smode_time, virtual_memory_bytes, physical_memory_bytes;
+                unsigned long minflt, cminflt, majflt, cmajflt, rsslim;
+                unsigned long long start_time_ticks, delayacct;
+                unsigned long startcode, endcode, startstack, kstkesp, kstkeip;
+                unsigned long sigignore, sigcatch, wchan, nswap, cnswap;
+    //            int pid;
 
-            if(fscanf(proc_entry_file, "%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
-                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
-                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
-                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d",
-                &pid, command_cstr, &state, &ppid, &pgrp, &session, &tty_nr, &tpgid, &flags, &minflt, 
-                &cminflt, &majflt, &cmajflt, &umode_time, &smode_time, &cutime, &cstime, &priority,
-                &nice, &num_threads, &itrealvalue, &start_time_ticks, &virtual_memory_bytes,
-                &physical_memory_bytes, &rsslim, &startcode, &endcode, &startstack, &kstkesp,
-                &kstkeip, &sig, &blocked, &sigignore, &sigcatch, &wchan, &nswap, &cnswap, 
-                &exit_signal, &processor, &rt_prio, &policy, &delayacct, &guest_time,
-                &cguest_time, &start_data, &end_data, &start_brk, &arg_start, &arg_end,
-                &env_start, &env_end, &exit_code) != 52) {
+                int res;
+                if((res = fscanf(proc_entry_file, "%d %[^)]%*s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
+                   "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
+                   "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
+                   "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d",
+                    &pid, command_cstr, &state, &ppid, &pgrp, &session, &tty_nr, &tpgid, &flags, &minflt, 
+                    &cminflt, &majflt, &cmajflt, &umode_time, &smode_time, &cutime, &cstime, &priority,
+                    &nice, &num_threads, &itrealvalue, &start_time_ticks, &virtual_memory_bytes,
+                    &physical_memory_bytes, &rsslim, &startcode, &endcode, &startstack, &kstkesp,
+                    &kstkeip, &sig, &blocked, &sigignore, &sigcatch, &wchan, &nswap, &cnswap, 
+                    &exit_signal, &processor, &rt_prio, &policy, &delayacct, &guest_time,
+                    &cguest_time, &start_data, &end_data, &start_brk, &arg_start, &arg_end,
+                    &env_start, &env_end, &exit_code)) != 52) {
 
-                fclose(proc_entry_file);
+                    fclose(proc_entry_file);
+                    
+                    fprintf(stderr, "Failed to read %s! Reason %s\n", dir_name, strerror(errno));
+                    exit(EXIT_FAILURE);
+                } 
                 
-                fprintf(stderr, "Failed to read %s! Reason %s\n", dir_name, strerror(errno));
-                //exit(EXIT_FAILURE);
-            } 
-            //printf("PID: %" PRId32 "\n", pid);
-
-
-            fprintf(stdout, ">>>>%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
-                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
-                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
-                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d<<<<\n",
-                pid, command_cstr, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, 
-                cminflt, majflt, cmajflt, umode_time, smode_time, cutime, cstime, priority,
-                nice, num_threads, itrealvalue, start_time_ticks, virtual_memory_bytes,
-                physical_memory_bytes, rsslim, startcode, endcode, startstack, kstkesp,
-                kstkeip, sig, blocked, sigignore, sigcatch, wchan, nswap, cnswap, 
-                exit_signal, processor, rt_prio, policy, delayacct, guest_time,
-                cguest_time, start_data, end_data, start_brk, arg_start, arg_end,
-                env_start, env_end, exit_code); 
-
+//Debug print
 #if 0
-            fprintf(stdout, "\n>>>>%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %lu "
-                                        "%lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
-                                        "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
-                                        "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %d<<<<\n",
-                pid, command_cstr, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, 
-                cminflt, majflt, cmajflt, umode_time, smode_time, cutime, cstime, priority,
-                nice, num_threads, itrealvalue, start_time_ticks, virtual_memory_bytes,
-                physical_memory_bytes, rsslim, startcode, endcode, startstack, kstkesp,
-                kstkeip, sig, blocked, sigignore, sigcatch, wchan, nswap, cnswap, 
-                exit_signal, processor, rt_prio, policy, delayacct, guest_time,
-                cguest_time, start_data, end_data, start_brk, arg_start, arg_end,
-                env_start, env_end, exit_code); 
-            //break;
+                fprintf(stdout, "%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu utime: %lu "
+                   "stime  %lu %ld %ld %ld %ld %ld %ld %llu %lu %ld %lu "
+                   "%lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu "
+                   "%d %d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %d %d %d",
+                    pid, command_cstr, state, ppid, pgrp, session, tty_nr, tpgid, flags, minflt, 
+                    cminflt, majflt, cmajflt, umode_time, smode_time, cutime, cstime, priority,
+                    nice, num_threads, itrealvalue, start_time_ticks, virtual_memory_bytes,
+                    physical_memory_bytes, rsslim, startcode, endcode, startstack, kstkesp,
+                    kstkeip, sig, blocked, sigignore, sigcatch, wchan, nswap, cnswap, 
+                    exit_signal, processor, rt_prio, policy, delayacct, guest_time,
+                    cguest_time, start_data, end_data, start_brk, arg_start, arg_end,
+                    env_start, env_end, exit_code);
 #endif
-                fclose(proc_entry_file);
-        } catch(invalid_argument exception) { }
+                command = string(begin(command_cstr)+1);
+         
+                start_time_ticks /= sysconf(_SC_CLK_TCK);
+                start_time_ticks += host_machine.getBootTime();
+                start_time = string(ctime((const time_t*) &start_time_ticks));
+
+                Process p;
+
+                if(i == 0) {
+                    p = Process(((int64_t) pid), command, state, ((uint64_t) umode_time),
+                            ((uint64_t) smode_time), ((int32_t) priority), ((int32_t) nice),
+                            ((int64_t) num_threads), start_time, ((uint64_t) start_time_ticks),
+                            ((uint64_t) virtual_memory_bytes), ((uint64_t) physical_memory_bytes),
+                            ((int32_t) exit_code));
+                    host_machine.getProcesses().push_back(p);
+                } else {
+                    if(isProcessRunning((int32_t) pid, (uint64_t) start_time_ticks)) {
+                        //TODO calculate umode and smode times for process  
+                        //TODO write function to get process from pid
+                        int64_t proc_pos = getProcessByPid((int64_t) pid);
+                        if(proc_pos == -1) {
+                            fprintf(stderr, "Process %d not found!!!\n", pid);
+                        }
+                        p = host_machine.getProcesses().at(proc_pos);
+                        uint64_t before_utime = p.getUmodeTime(), before_stime = p.getSmodeTime();
+                        double utime_load, stime_load;
+                        
+                        utime_load = 100 * (((uint64_t) umode_time - before_utime ) / (double) (host_machine.getCpuTime()));
+                        stime_load = 100 * (((uint64_t) smode_time - before_stime ) / (double) (host_machine.getCpuTime()));
+                        p.setCputLoad((utime_load + stime_load) / 2);
+                        host_machine.getProcesses().at(proc_pos) = p;
+
+                    } else {
+                        int64_t proc_pos = getProcessByPid((int64_t) pid);
+                        if(proc_pos != -1) {
+                            host_machine.getProcesses().erase(host_machine.getProcesses().begin() + proc_pos);
+                        }
+                        p = Process(((int64_t) pid), command, state, ((uint64_t) umode_time),
+                            ((uint64_t) smode_time), ((int32_t) priority), ((int32_t) nice),
+                            ((int64_t) num_threads), start_time, ((uint64_t) start_time_ticks),
+                            ((uint64_t) virtual_memory_bytes), ((uint64_t) physical_memory_bytes),
+                            ((int32_t) exit_code));
+                        host_machine.getProcesses().push_back(p);
+                    }
+                }
+                    fclose(proc_entry_file);
+            } catch(invalid_argument exception) { }
+        }
+        rewinddir(dir);
+        this_thread::sleep_for(chrono::milliseconds(2000));
     }
 
     closedir(dir);
@@ -378,16 +417,36 @@ void ProcParser::parseStat()
 		exit(EXIT_FAILURE);
     }
 
-    unsigned long long user, nice, system, idle;
+    unsigned long long user, nice, system, idle, iowait, irq, softirq, steal, guest, guest_nice;
     unsigned long long boot_time, processes, procs_running;
 
-    if( (fscanf(proc_stat, "%*s %llu %llu %llu %llu %*llu "
-        "%*llu %*llu %*llu %*llu %*llu", &user, &nice, &system, &idle)) != 4) {
+    if( (fscanf(proc_stat, "%*s %llu %llu %llu %llu %llu "
+        "%llu %llu %llu %llu %llu", &user, &nice, &system, &idle, &iowait, &irq, &softirq,
+        &steal, &guest, &guest_nice)) != 10) {
         fprintf(stderr, "Failed to read %s\n", STAT_PATH);
         fclose(proc_stat);
         exit(EXIT_FAILURE);        
     }
     
+    uint64_t cpu_time_total_before = (uint64_t) (user + nice + system + idle + iowait + 
+            irq + softirq + steal + guest + guest_nice);
+
+    rewind(proc_stat);
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    if( (fscanf(proc_stat, "%*s %llu %llu %llu %llu %llu "
+        "%llu %llu %llu %llu %llu", &user, &nice, &system, &idle, &iowait, &irq, &softirq,
+        &steal, &guest, &guest_nice)) != 10) {
+        fprintf(stderr, "Failed to read %s\n", STAT_PATH);
+        fclose(proc_stat);
+        exit(EXIT_FAILURE);        
+    }
+    uint64_t cpu_time_total_after = (uint64_t) (user + nice + system + idle + iowait + 
+            irq + softirq + steal + guest + guest_nice);
+    uint64_t cpu_time_total = (cpu_time_total_after - cpu_time_total_before); /// sysconf(_SC_CLK_TCK);
+
+    host_machine.setCpuTime(cpu_time_total);
+
     char *line = NULL;
     size_t len = 0;
     while((getline(&line, &len, proc_stat)) != -1) {
@@ -416,12 +475,42 @@ void ProcParser::parseStat()
             }
         }
     }
+
     if(line)
         free(line);
 
+    host_machine.setBootTime(boot_time);
+    host_machine.setNumberOfProcesses(processes);
+    host_machine.setProcsRunning(procs_running);
+
     printf("cpu %llu %llu %llu %llu\n", user, nice, system, idle);
     printf("btime %llu processes %llu running %llu\n", boot_time, processes, procs_running);
+    printf("cpu_time %llu, cpu_time before %llu, cpu_time after %llu\n", 
+            host_machine.getCpuTime(), cpu_time_total_before, cpu_time_total_after);
     fclose(proc_stat);
+}
+
+bool ProcParser::isProcessRunning(int32_t pid, uint64_t ticks)
+{
+    vector<Process> procs = host_machine.getProcesses();
+    for(unsigned i = 0; i < procs.size(); i++) {
+        if(procs.at(i).getPid() == pid && procs.at(i).getStartTimeTicks() == ticks)
+            return true;
+    }
+
+    return false;
+}
+
+int64_t ProcParser::getProcessByPid(int64_t pid)
+{
+    vector<Process> procs = host_machine.getProcesses();
+    for(uint32_t i = 0; i < procs.size(); i++) {
+        if(procs.at(i).getPid() == pid) {
+            return i;
+        }
+    }
+
+	return -1;
 }
 
 string ProcParser::trim(const std::string& str)
@@ -514,11 +603,20 @@ int32_t main()
         cout<<"Ip: "<<proc_parser.getHostMachine().getIpAddresses().at(i)<<endl;
     }
 
+    vector<Process> procs = proc_parser.getHostMachine().getProcesses();
+    for(uint32_t i = 0; i < procs.size(); i++) {
+        printf("Pid %d command %s start_time %s cpu_load %lf\n", procs.at(i).getPid(), procs.at(i).getCommand().c_str(), procs.at(i).getStartTime().c_str(), procs.at(i).getCpuLoad());
+    }
+
 	printf("Total Memory: %lu Available Memory %lu\n", proc_parser.getHostMachine().getRAM().getMemTotal(), proc_parser.getHostMachine().getRAM().getMemAvailable());
 
     printf("Loadavg 1: %d\n",proc_parser.getHostMachine().getLoadavg1());
     printf("Uptime %.2lf; UPtime Idle: %.2lf\n", proc_parser.getHostMachine().getUptime(), proc_parser.getHostMachine().getUptimeIdle());
     printf("Kernel version %s; Hostname %s\n", proc_parser.getHostMachine().getKernelVersion().c_str(), proc_parser.getHostMachine().getHostname().c_str());
 
+    HostToJson j = HostToJson(proc_parser.getHostMachine());
+    cout<<"JSON"<<endl;
+    cout<<"================"<<endl;
+    cout<<j.getJsonDocument().dump()<<endl;   
 	return 0;
 }
