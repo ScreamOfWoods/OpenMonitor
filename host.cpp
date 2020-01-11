@@ -45,6 +45,21 @@ uint32_t Host::getNumberOfProcesses()
     return number_of_processes;
 }
 
+uint32_t Host::getProcsRunning()
+{
+    return procs_running;
+}
+
+uint64_t Host::getCpuTime()
+{
+    return cpu_time;
+}
+
+uint64_t Host::getBootTime()
+{
+    return boot_time;
+}
+
 double Host::getUptime()
 {
     return uptime;
@@ -65,22 +80,22 @@ string Host::getHostname()
     return hostname;
 }
 
-vector<string> Host::getIpAddresses()
+vector<string>& Host::getIpAddresses()
 {
     return ip_addresses;
 }
 
-vector<string> Host::getMacAddresses()
+vector<string>& Host::getMacAddresses()
 {
     return mac_addresses;
 }
 
-vector<PhysicalThread> Host::getThreads()
+vector<PhysicalThread>& Host::getThreads()
 {
     return threads;
 }
 
-vector<Process> Host::getProcesses()
+vector<Process>& Host::getProcesses()
 {
     return processes;
 }
@@ -108,6 +123,21 @@ void Host::setLoadavg15(int8_t loadavg_15)
 void Host::setNumberOfProcesses(uint32_t number_of_processes)
 {
     this->number_of_processes = number_of_processes;
+}
+
+void Host::setProcsRunning(uint32_t procs_running)
+{
+    this->procs_running = procs_running;
+}
+
+void Host::setCpuTime(uint64_t cpu_time)
+{
+    this->cpu_time = cpu_time;
+}
+
+void Host::setBootTime(uint64_t boot_time)
+{
+    this->boot_time = boot_time;
 }
 
 void Host::setUptime(double uptime)
