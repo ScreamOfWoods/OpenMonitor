@@ -1,0 +1,24 @@
+CREATE TABLE hosts
+(
+    id INTEGER PRIMARY KEY,
+    description TEXT,
+    accessibility INTEGER
+);
+
+CREATE TABLE statistics
+(
+    id INTEGER PRIMARY KEY,
+    host_id INTEGER,
+    date_logged TEXT,
+    json_data TEXT,
+
+    FOREIGN KEY(host_id) REFERENCES hosts(id)
+);
+
+CREATE TABLE users
+(
+    id INTEGER PRIMARY KEY,
+    username TEXT,
+    pass_hash TEXT,
+    permission_level INTEGER
+);
