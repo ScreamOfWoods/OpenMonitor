@@ -34,3 +34,9 @@
 #Vim necessary files
 *.swp
 *.files
+
+#Database files
+*.db
+sqlite3*
+shell.c
+
