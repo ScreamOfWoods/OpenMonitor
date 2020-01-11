@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include "json.hpp"
 
 //Processor abstraction
 class Processor
@@ -22,9 +23,9 @@ class Processor
 		void setVendorID(std::string vendor_id);
 		void setModelName(std::string model_name);
 		void setNumberOfCores(std::int32_t number_of_cores);
-		std::string getVendorID();
-		std::string getModelName();
-		std::int32_t getNumberOfCores();
+		std::string getVendorID() const;
+		std::string getModelName() const;
+		std::int32_t getNumberOfCores() const;
 };
 
 #endif //PROCESSOR_H

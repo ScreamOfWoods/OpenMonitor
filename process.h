@@ -21,6 +21,7 @@ class Process
         uint64_t virtual_memory_bytes;
         uint64_t physical_memory_bytes;
         int32_t exit_code;
+        double cpu_load;
     public:
         //Constructors
         Process();
@@ -30,19 +31,20 @@ class Process
                 uint64_t physical_memory_bytes, int32_t exit_code);
 
         //Functions
-        int32_t getPid();
-        std::string getCommand();
-        char getState();
-        uint64_t getUmodeTime();
-        uint64_t getSmodeTime();
-        int32_t getPriority();
-        int32_t getNice();
-        int64_t getNumThreads();
-        std::string getStartTime();
-        uint64_t getStartTimeTicks();
-        uint64_t getVirtualMemory();
-        uint64_t getPhysicalMemory();
-        int32_t getExitCode();
+        int32_t getPid() const;
+        std::string getCommand() const;
+        char getState() const;
+        uint64_t getUmodeTime() const;
+        uint64_t getSmodeTime() const;
+        int32_t getPriority() const;
+        int32_t getNice() const;
+        int64_t getNumThreads() const;
+        std::string getStartTime() const;
+        uint64_t getStartTimeTicks() const;
+        uint64_t getVirtualMemory() const;
+        uint64_t getPhysicalMemory() const;
+        int32_t getExitCode() const;
+        double getCpuLoad() const;
         void setPid(int32_t pid);
         void setCommand(std::string command);
         void setState(char state);
@@ -56,6 +58,7 @@ class Process
         void setVirtualMemory(uint64_t virtual_memory_bytes);
         void setPhysicalMemory(uint64_t physical_memory_bytes);
         void setExitCode(int32_t exit_code);
+        void setCputLoad(double cpu_load);
 };
 
 #endif //PROCESS_H

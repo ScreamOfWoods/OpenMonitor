@@ -2,6 +2,7 @@
 #define RAM_H
 
 #include <cstdint>
+#include "json.hpp"
 
 //Random Access Memory abstraction class
 class RAM
@@ -20,13 +21,13 @@ class RAM
 		RAM();
 
 		//Functions
-        std::uint64_t getMemTotal();
-        std::uint64_t getMemFree();
-	    std::uint64_t getMemAvailable();
-	    std::uint64_t getCached();
-	    std::uint64_t getSwapTotal();
-	    std::uint64_t getSwapFree();
-	    std::uint64_t getDirty();
+        std::uint64_t getMemTotal() const;
+        std::uint64_t getMemFree() const;
+	    std::uint64_t getMemAvailable() const;
+	    std::uint64_t getCached() const;
+	    std::uint64_t getSwapTotal() const;
+	    std::uint64_t getSwapFree() const;
+	    std::uint64_t getDirty() const;
 		void setMemTotal(std::uint64_t mem_total);
 		void setMemFree(std::uint64_t mem_free);
 		void setMemAvailable(std::uint64_t mem_available);

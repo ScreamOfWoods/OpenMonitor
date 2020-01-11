@@ -25,74 +25,78 @@ Process::Process(int32_t pid, string command, char state, uint64_t umode_time,
     this->virtual_memory_bytes = virtual_memory_bytes;
     this->physical_memory_bytes = physical_memory_bytes;
     this->exit_code = exit_code;
+    cpu_load = 0.0f;
 }
 
-
-int32_t Process::getPid()
+int32_t Process::getPid() const
 {
     return pid;
 }
 
-string Process::getCommand()
+string Process::getCommand() const
 {
     return command;
 }
 
-char Process::getState()
+char Process::getState() const
 {
     return state;
 }
 
-uint64_t Process::getUmodeTime()
+uint64_t Process::getUmodeTime() const
 {
     return umode_time;
 }
 
-uint64_t Process::getSmodeTime()
+uint64_t Process::getSmodeTime() const
 {
     return smode_time;
 }
 
-int32_t Process::getPriority()
+int32_t Process::getPriority() const
 {
     return priority;
 }
 
-int32_t Process::getNice()
+int32_t Process::getNice() const
 {
     return nice;
 }
 
-int64_t Process::getNumThreads()
+int64_t Process::getNumThreads() const
 {
     return num_threads;
 }
 
-string Process::getStartTime()
+string Process::getStartTime() const
 {
     return start_time;
 }
 
-uint64_t Process::getStartTimeTicks()
+uint64_t Process::getStartTimeTicks() const
 {
     return start_time_ticks;
 }
 
-uint64_t Process::getVirtualMemory()
+uint64_t Process::getVirtualMemory() const
 {
     return virtual_memory_bytes;
 }
 
-uint64_t Process::getPhysicalMemory()
+uint64_t Process::getPhysicalMemory() const
 {
     return physical_memory_bytes;
 }
 
-int32_t Process::getExitCode()
+int32_t Process::getExitCode() const
 {
     return exit_code;
 }
 
+double Process::getCpuLoad() const
+{
+    return cpu_load;
+}
 
 void Process::setPid(int32_t pid)
 {
@@ -159,3 +163,7 @@ void Process::setExitCode(int32_t exit_code)
     this->exit_code = exit_code;
 }
 
+void Process::setCputLoad(double cpu_load)
+{
+    this->cpu_load = cpu_load;
+}

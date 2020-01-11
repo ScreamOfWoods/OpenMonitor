@@ -38,17 +38,17 @@ void PhysicalThread::setCoreID(int32_t core_id)
 	this->core_id = core_id;
 }
 
-int32_t PhysicalThread::getThreadID()
+int32_t PhysicalThread::getThreadID() const
 {
 	return thread_id;
 }
 
-int32_t PhysicalThread::getCoreID()
+int32_t PhysicalThread::getCoreID() const
 {
 	return core_id;
 }
 
-double PhysicalThread::getThreadClock()
+double PhysicalThread::getThreadClock() const
 {
 	return thread_clock;
 }

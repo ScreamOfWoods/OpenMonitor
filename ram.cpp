@@ -6,37 +6,37 @@ using namespace std;
 
 RAM::RAM() { mem_total = 0;}
 
-uint64_t RAM::getMemTotal()
+uint64_t RAM::getMemTotal() const
 {
 	return this->mem_total;
 }
 
-uint64_t RAM::getMemFree()
+uint64_t RAM::getMemFree() const
 {
 	return mem_free;
 }
 
-uint64_t RAM::getMemAvailable()
+uint64_t RAM::getMemAvailable() const
 {
 	return mem_available;
 }
 
-uint64_t RAM::getCached()
+uint64_t RAM::getCached() const
 {
 	return cached;
 }
 
-uint64_t RAM::getSwapTotal()
+uint64_t RAM::getSwapTotal() const
 {
 	return swap_total;
 }
 
-uint64_t RAM::getSwapFree()
+uint64_t RAM::getSwapFree() const
 {
 	return swap_free;
 }
 
-uint64_t RAM::getDirty()
+uint64_t RAM::getDirty() const
 {
 	return dirty;
 }

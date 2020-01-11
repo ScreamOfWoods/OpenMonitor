@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "processor.h"
+#include "json.hpp"
 
 //Physical thread abstraction extends Processor class
 class PhysicalThread : public Processor
@@ -22,9 +23,9 @@ class PhysicalThread : public Processor
 		void setThreadID(int32_t threadID);
 		void setCoreID(int32_t coreID);
 		void setThreadClock(double thread_clock);
-		int32_t getThreadID();
-		int32_t getCoreID();
-		double getThreadClock();
+		int32_t getThreadID() const;
+		int32_t getCoreID() const;
+		double getThreadClock() const;
 };
 
 #endif //PHYSICAL_THREAD_H

@@ -22,17 +22,17 @@ Processor::Processor()
     number_of_cores = 0;
 }
 
-string Processor::getVendorID()
+string Processor::getVendorID() const
 {
 	return vendor_id;
 }
 
-string Processor::getModelName()
+string Processor::getModelName() const
 {
 	return model_name;
 }
 
-int32_t Processor::getNumberOfCores()
+int32_t Processor::getNumberOfCores() const
 {
 	return number_of_cores;
 }
