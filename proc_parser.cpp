@@ -22,6 +22,8 @@
 #include "ram.h"
 #include "host.h"
 #include "host_to_json.h"
+#include "sql_adapter.h"
+#include "sqlite3.h"
 
 using namespace std;
 
@@ -618,5 +620,9 @@ int32_t main()
     cout<<"JSON"<<endl;
     cout<<"================"<<endl;
     cout<<j.getJsonDocument().dump()<<endl;   
+
+    SqlAdapter sa = SqlAdapter(proc_parser.getHostMachine(), j, "Home Server", 0);
+    sa.writeToDatabase();
+
 	return 0;
 }
