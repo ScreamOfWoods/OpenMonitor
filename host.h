@@ -14,6 +14,8 @@ class Host
 {
 	private:
         //Variables
+        int64_t dbid;
+
         int8_t loadavg_1;
         int8_t loadavg_5;
         int8_t loadavg_15;
@@ -36,6 +38,7 @@ class Host
         Host();
 
         //Functions
+        int64_t getDbId();
 		int8_t getLoadavg1();
 		int8_t getLoadavg5();
 		int8_t getLoadavg15();
@@ -53,6 +56,7 @@ class Host
         std::vector<Process>& getProcesses();
         RAM& getRAM();
         void addThread(PhysicalThread thread);
+        void setDbId(int64_t dbid);
 		void setLoadavg1(std::int8_t loadavg_1);
 		void setLoadavg5(std::int8_t loadavg_5);
 		void setLoadavg15(std::int8_t loadavg_15);

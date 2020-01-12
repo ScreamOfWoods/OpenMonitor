@@ -18,11 +18,17 @@ Host::Host()
     uptime = 0;
     kernel_version = "";
     hostname = "";
+    dbid = 0;
 }
 
 void Host::addThread(PhysicalThread thread)
 {
     threads.push_back(thread);
+}
+
+int64_t Host::getDbId()
+{
+    return dbid;
 }
 
 int8_t Host::getLoadavg1()
@@ -103,6 +109,11 @@ vector<Process>& Host::getProcesses()
 RAM& Host::getRAM()
 {
     return random_access_memory;
+}
+
+void Host::setDbId(int64_t dbid)
+{
+    this->dbid = dbid;
 }
 
 void Host::setLoadavg1(int8_t loadavg_1)

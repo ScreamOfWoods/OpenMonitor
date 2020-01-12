@@ -18,6 +18,11 @@ HostToJson::HostToJson(Host host_machine)
     createJsonObject();
 }
 
+HostToJson::HostToJson()
+{
+
+}
+
 void HostToJson::createJsonObject()
 {
     jdoc["loadavg_1"] = host_machine.getLoadavg1();
