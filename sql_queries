@@ -1,13 +1,13 @@
 CREATE TABLE hosts
 (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     description TEXT,
     accessibility INTEGER
 );
 
 CREATE TABLE statistics
 (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     host_id INTEGER,
     date_logged TEXT,
     json_data TEXT,
@@ -17,7 +17,7 @@ CREATE TABLE statistics
 
 CREATE TABLE users
 (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT,
     pass_hash TEXT,
     permission_level INTEGER
