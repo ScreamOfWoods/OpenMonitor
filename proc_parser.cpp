@@ -94,7 +94,7 @@ void ProcParser::parseCpuInfo()
 			}
 			continue;
 		}
-		cout<<vendor_id<<" | "<<model_name<<" | "<<number_of_cores<<" | "<<thread_id<<" | "<<thread_clock<<" | "<<core_id<<endl;
+		//cout<<vendor_id<<" | "<<model_name<<" | "<<number_of_cores<<" | "<<thread_id<<" | "<<thread_clock<<" | "<<core_id<<endl;
 
 		addThread(vendor_id, model_name, stoi(number_of_cores), stoi(thread_id),
 				stoi(core_id), stod(thread_clock));
@@ -175,7 +175,7 @@ void ProcParser::parseLoadavg()
 	host_machine.setLoadavg5(int8_t (load5 * 100));
 	host_machine.setLoadavg15(int8_t (load15 * 100));
 
-	printf("Loadavg: %.2f %.2f %.2f %d/%d %d\n", load1, load5, load15, runnable_kern_procs, existing_kern_procs, last_pid);
+//	printf("Loadavg: %.2f %.2f %.2f %d/%d %d\n", load1, load5, load15, runnable_kern_procs, existing_kern_procs, last_pid);
 
     fclose(file_instance);
 }
@@ -360,7 +360,7 @@ void ProcParser::parseProcessStat()
                 start_time_ticks /= sysconf(_SC_CLK_TCK);
                 start_time_ticks += host_machine.getBootTime();
                 start_time = string(ctime((const time_t*) &start_time_ticks));
-
+                start_time.pop_back();
                 Process p;
 
                 if(i == 0) {
@@ -410,7 +410,6 @@ void ProcParser::parseProcessStat()
     closedir(dir);
 }
 
-//TODO create proc stat abstraction? and fill it
 void ProcParser::parseStat()
 {
     FILE* proc_stat;
@@ -485,10 +484,12 @@ void ProcParser::parseStat()
     host_machine.setNumberOfProcesses(processes);
     host_machine.setProcsRunning(procs_running);
 
+#if 0
     printf("cpu %llu %llu %llu %llu\n", user, nice, system, idle);
     printf("btime %llu processes %llu running %llu\n", boot_time, processes, procs_running);
     printf("cpu_time %llu, cpu_time before %llu, cpu_time after %llu\n", 
             host_machine.getCpuTime(), cpu_time_total_before, cpu_time_total_after);
+#endif
     fclose(proc_stat);
 }
 
@@ -581,48 +582,4 @@ int32_t ProcParser::getValueFromProperty(vector<string> tokens, string property)
 Host& ProcParser::getHostMachine()
 {
     return host_machine;
-}
-
-int32_t main()
-{
-	ProcParser proc_parser = ProcParser();
-
-	proc_parser.initSearchTokens();
-	proc_parser.parseCpuInfo();
-	proc_parser.parseMemInfo();
-	proc_parser.parseLoadavg();
-	proc_parser.parseUptime();
-	proc_parser.parseHostnameKernelVerion();
-	proc_parser.parseFibTrie();
-    proc_parser.parseStat();
-	proc_parser.parseProcessStat();
-
-	for(uint32_t i = 0; i < proc_parser.getHostMachine().getThreads().size(); i++) {
-		cout<<proc_parser.getHostMachine().getThreads().at(i).getThreadID()<<" "<<proc_parser.getHostMachine().getThreads().at(i).getThreadClock()<<endl;
-	}
-
-    for(uint32_t i = 0; i < proc_parser.getHostMachine().getIpAddresses().size(); i++){
-        cout<<"Ip: "<<proc_parser.getHostMachine().getIpAddresses().at(i)<<endl;
-    }
-
-    vector<Process> procs = proc_parser.getHostMachine().getProcesses();
-    for(uint32_t i = 0; i < procs.size(); i++) {
-        printf("Pid %d command %s start_time %s cpu_load %lf\n", procs.at(i).getPid(), procs.at(i).getCommand().c_str(), procs.at(i).getStartTime().c_str(), procs.at(i).getCpuLoad());
-    }
-
-	printf("Total Memory: %lu Available Memory %lu\n", proc_parser.getHostMachine().getRAM().getMemTotal(), proc_parser.getHostMachine().getRAM().getMemAvailable());
-
-    printf("Loadavg 1: %d\n",proc_parser.getHostMachine().getLoadavg1());
-    printf("Uptime %.2lf; UPtime Idle: %.2lf\n", proc_parser.getHostMachine().getUptime(), proc_parser.getHostMachine().getUptimeIdle());
-    printf("Kernel version %s; Hostname %s\n", proc_parser.getHostMachine().getKernelVersion().c_str(), proc_parser.getHostMachine().getHostname().c_str());
-
-    HostToJson j = HostToJson(proc_parser.getHostMachine());
-    cout<<"JSON"<<endl;
-    cout<<"================"<<endl;
-    cout<<j.getJsonDocument().dump()<<endl;   
-
-    SqlAdapter sa = SqlAdapter(proc_parser.getHostMachine(), j, "Home Server", 0);
-    sa.writeToDatabase();
-
-	return 0;
 }
