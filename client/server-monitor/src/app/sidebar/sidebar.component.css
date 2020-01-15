@@ -6,12 +6,11 @@
     position: absolute;
     left: 0;
     top:0;
+    overflow-y: auto;
 }
-
 .info {
-    padding: 0px 0px 0px 5px;
+    margin-left: 50px;
 }
-
 .sidebar-search {
     padding: 5px;
 }
@@ -28,18 +27,38 @@
 }
 
 ul {
-    padding: 0px 5px 0px 1px;
+    padding: 0px 0px 0px 1px;
     background: #000000;
+    margin: 0px;
 }
 
 ul > li {
     border-bottom: 3px solid black;
     padding: 15px;
-    height: 30px;
+    height:14px;
+    font-size: 14px;
     list-style-type: none;
-    background: #444444;
+    background: #333333;
+    position: relative;
 }
 
 ul > li:first-child {
     border-top: 3px solid black;
+}
+.sidebar-view-head {
+    padding: 15px;
+    height: 30px;
+    font-size: 20px;
+    background: #666666;
+}
+.host-info {
+    border: 1px #666666 solid;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+    height: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 11px;
 }

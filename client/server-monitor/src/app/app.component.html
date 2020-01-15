@@ -1,1 +1,9 @@
-<app-sidebar></app-sidebar>
+
+<div (click)="HideSidebar()" class="main-background">
+    <app-general-info *ngIf="navigation.selectedView == view.General"></app-general-info>
+    <app-cpu-info *ngIf="navigation.selectedView == view.CPU"></app-cpu-info>
+    <app-memory-info *ngIf="navigation.selectedView == view.Memory"></app-memory-info>
+    <app-process-info *ngIf="navigation.selectedView == view.Process"></app-process-info>
+</div>
+<app-sidebar *ngIf="sidebarVisible"></app-sidebar>
+<div (click)="ToggleSidebar()" class="sidebar-toggle-button"><</div>

@@ -1,0 +1,16 @@
+.tab-background {
+    background-image: url("../../assets/general.png");
+}
+.general-host-bigrow {
+    margin: 20px;
+    background: #333333;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+.general-host-label {
+    font-size: 20px;
+}
+.general-host-text {
+    font-size: 15px;
+}
