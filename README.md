@@ -1,3 +1,3 @@
-OpenSM - Open Source Server Monitor.
+OpenMonitor - Open Source Server Monitor.
 This started as a university project for Technical University of Sofia.
 Let's see where it goes...
