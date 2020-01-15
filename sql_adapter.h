@@ -15,7 +15,7 @@ class SqlAdapter
     private:
         //Variables
         sqlite3* database;
-        Host host_machine;
+        Host *host_machine;
         HostToJson json_host;
 
         std::string description;
@@ -27,9 +27,8 @@ class SqlAdapter
         std::string insertStatistics(int64_t host_id, std::string date_logged);
     public:
         //Constructors
-        SqlAdapter(Host host_machine, HostToJson json_host, 
+        SqlAdapter(Host *host_machine, HostToJson json_host, 
                 std::string description, int32_t accessibility);
-
         //Functions;
         void writeToDatabase();
 };

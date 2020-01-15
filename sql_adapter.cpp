@@ -13,7 +13,7 @@
 using namespace std;
 using namespace chrono;
 
-SqlAdapter::SqlAdapter(Host host_machine, HostToJson json_host, string description, int32_t accessibility)
+SqlAdapter::SqlAdapter(Host *host_machine, HostToJson json_host, string description, int32_t accessibility)
 {
     this->host_machine = host_machine;
     this->json_host = json_host;
@@ -64,14 +64,14 @@ void SqlAdapter::writeToDatabase()
 
     sqlite3_exec(database, "BEGIN EXCLUSIVE TRANSACTION;", NULL, NULL, NULL);
 
-    if(!host_machine.getDbId()) {
+    if(!host_machine->getDbId()) {
         //cout<<insertHosts()<<endl;
         sqlite3_exec(database, insertHosts().c_str(), NULL, NULL, NULL);
-        host_machine.setDbId(sqlite3_last_insert_rowid(database));
+        host_machine->setDbId(sqlite3_last_insert_rowid(database));
     }
 
     //cout<<insertStatistics(host_machine.getDbId(), date)<<endl;
-    sqlite3_exec(database, insertStatistics(host_machine.getDbId(), date).c_str(), NULL, NULL, NULL);
+    sqlite3_exec(database, insertStatistics(host_machine->getDbId(), date).c_str(), NULL, NULL, NULL);
     sqlite3_exec(database, "END TRANSACTION;", NULL, NULL, NULL);
 
     sqlite3_close(database);

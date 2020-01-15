@@ -123,8 +123,8 @@ void parseArgs(int argc, char *argv[])
 
 void mainLoop()
 {
+    ProcParser proc_parser = ProcParser();
     while(true) {
-        ProcParser proc_parser = ProcParser();
 
         cout<<"Parsing /proc/ ..."<<endl;
 
@@ -144,7 +144,7 @@ void mainLoop()
         HostToJson j = HostToJson(proc_parser.getHostMachine());
         cout<<"Done!"<<endl;
         cout<<"Generating query"<<endl;
-        SqlAdapter sa = SqlAdapter(proc_parser.getHostMachine(), j, server_description, srv_access);
+        SqlAdapter sa = SqlAdapter(&proc_parser.getHostMachine(), j, server_description, srv_access);
         sa.writeToDatabase();
         cout<<"Done!"<<endl;
 
