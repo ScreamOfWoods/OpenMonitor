@@ -16,6 +16,7 @@ class HostToJson
         void createJsonObject();
         void addProcessorsToJson();
         void addProcessesToJson();
+        void addAddressesToJson();
     public:
         //Construcotrs
         HostToJson(Host host_machine);
