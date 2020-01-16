@@ -1,3 +1,9 @@
 .tab-background {
     background-image: url("../../assets/cpu.png");
 }
+.graph-background {
+    background: #eeeeeecc;
+    width: 90vw;
+    height: 90vw;
+    margin: auto;
+}

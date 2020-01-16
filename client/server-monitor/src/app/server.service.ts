@@ -34,8 +34,8 @@ export class ServerService {
     return this.request('GET', `${environment.serverUrl}/general/`+parameters);
   }
 
-  getChatRoomChange(parameters) {
-    return this.request('GET', `${environment.serverUrl}/getChatRoomChange`, null, parameters);
+  cpu(parameters) {
+    return this.request('GET', `${environment.serverUrl}/cpu/clock/`+parameters);
   }
 
   createUser(event) {

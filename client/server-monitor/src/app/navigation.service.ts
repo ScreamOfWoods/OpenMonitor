@@ -1,14 +1,33 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { ServerService } from './server.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavigationService {
+  currentDataChange: EventEmitter<any> = new EventEmitter();
   selectedHostId: number;
   selectedView = View.General;
   hosts: any;
   currentData: any={};
+  clockData = [
+    {
+      "name": "Germany",
+      "series": [
+        {
+          "name": "2010",
+          "value": 7300000
+        },
+        {
+          "name": "2011",
+          "value": 8940000
+        }
+      ]
+    }
+  ];
+  getNavChangeEmitter() {
+    return this.currentDataChange;
+  }
   constructor(private server: ServerService) { }
 
   refreshData()
@@ -28,12 +47,13 @@ export class NavigationService {
         break;
       }
       case View.CPU: {
-          this.server.general(this.selectedHostId
+          this.server.cpu(this.selectedHostId
           ).then(responce=> {
             var res=(responce as any);
-            this.currentData = res;
-            console.log(res);
-        },error=>{console.log("error: " + error)});
+            this.clockData = res;
+            this.currentDataChange.emit(res);
+            console.warn(responce);
+        },error=>{console.warn("error: " + error)});
         break;
       }
       case View.Memory: {

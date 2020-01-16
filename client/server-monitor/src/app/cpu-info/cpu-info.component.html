@@ -1,7 +1,19 @@
 <div class="tab-background">
     <div class="tab-title">CPU info</div>
-    <div class="general-host-bigrow">
-        <div class="general-host-label">Host Name</div>
-        <div class="general-host-text">NaNakataKompa</div>
+    <div class="graph-background">
+        <ngx-charts-line-chart
+        [scheme]="colorScheme"
+        [results]="data"
+        [gradient]="gradient"
+        [xAxis]="showXAxis"
+        [yAxis]="showYAxis"
+        [legend]="showLegend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxisLabel]="xAxisLabel"
+        [yAxisLabel]="yAxisLabel"
+        [autoScale]="autoScale"
+        (select)="onSelect($event)">
+    </ngx-charts-line-chart>
     </div>
 </div>
