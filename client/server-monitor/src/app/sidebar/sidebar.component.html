@@ -13,6 +13,6 @@
     </ul>
   <div class="sidebar-view-head">Hosts</div>
     <ul>
-      <li *ngFor="let host of hosts" (click)="hostClick(host.id)"><div>{{host.name}}</div><div class="host-info" (click)="viewClick(4)">I</div></li>
+      <li *ngFor="let host of navigation.hosts" (click)="hostClick(host.id)"><div>{{host.description}}</div><div class="host-info" (click)="viewClick(4)">I</div></li>
     </ul>
 </div>

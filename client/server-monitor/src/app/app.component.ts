@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavigationService, View } from './navigation.service';
+import { ServerService } from './server.service';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,17 @@ export class AppComponent {
   get view() { return View; }
   title = 'server-monitor';
   sidebarVisible: boolean;
-  constructor(public navigation: NavigationService){
+  ngOnInit()
+  {
+    this.server.getHosts(null).then(responce=> {
+        var res=(responce as any);
+        console.log(res);
+        this.navigation.hosts = res;
+        this.navigation.selectedHostId = this.navigation.hosts[0].id;
+        this.navigation.refreshData();
+    },error=>{console.log("error: " + error)});
+  }
+  constructor(public navigation: NavigationService,private server: ServerService){
 
   }
   ToggleSidebar()

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ServerService } from '../server.service';
+import { NavigationService } from '../navigation.service';
 
 @Component({
   selector: 'app-general-info',
@@ -7,9 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GeneralInfoComponent implements OnInit {
 
-  constructor() { }
+  constructor(private server: ServerService,public navigation: NavigationService) { }
 
   ngOnInit() {
+    /*this.server.getChats(
+      {
+
+      }
+      ).then(responce=> {
+        var res=(responce as any);
+        console.log(res);
+    },error=>{console.log("error: " + error)});*/
   }
 
 }

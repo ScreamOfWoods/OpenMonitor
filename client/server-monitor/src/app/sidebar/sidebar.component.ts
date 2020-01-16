@@ -11,11 +11,7 @@ export class SidebarComponent implements OnInit {
   @Output() ViewChanged = new EventEmitter<View>();
   @Output() HostChanged = new EventEmitter<number>();
 
-hosts = [
-  {name:'host1', id:1},{name: 'host2', id:2}
-]
-
-  constructor(private navigation: NavigationService) { }
+  constructor(public navigation: NavigationService) { }
 
   ngOnInit() {
   }
@@ -50,11 +46,13 @@ hosts = [
         break;
       }
     }
+    this.navigation.refreshData();
   }
 
   hostClick(hostId: number)
   {
     console.log(hostId);
       this.navigation.selectedHostId = hostId;
+      this.navigation.refreshData();
   }
 }

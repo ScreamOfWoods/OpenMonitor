@@ -3,6 +3,34 @@
     <div class="tab-title">General info</div>
     <div class="general-host-bigrow">
         <div class="general-host-label">Host Name</div>
-        <div class="general-host-text">NaNakataKompa</div>
+        <div class="general-host-text">{{navigation.currentData.hostname}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Description</div>
+        <div class="general-host-text">{{navigation.currentData.description}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Boot time</div>
+        <div class="general-host-text">{{navigation.currentData.boot_time}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Uptime</div>
+        <div class="general-host-text">{{navigation.currentData.uptime}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Kernel version</div>
+        <div class="general-host-text">{{navigation.currentData.kernel_version}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Total memory</div>
+        <div class="general-host-text">{{navigation.currentData.mem_total}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">Load (5m)</div>
+        <div class="general-host-text">{{navigation.currentData.loadavg_5}}</div>
+    </div>
+    <div class="general-host-bigrow">
+        <div class="general-host-label">IPs</div>
+        <div *ngFor="let ip of navigation.currentData.ip_addresses" class="general-host-text">{{ip}}</div>
     </div>
 </div>
